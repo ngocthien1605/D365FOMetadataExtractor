@@ -24,7 +24,11 @@ D365FOMetadataExtractor reads metadata from the D365FO metadata provider and gen
 
 - Microsoft Dynamics 365 Finance and Operations installed
 - .NET Framework 4.6.1 or higher
-- Access to D365FO metadata DLLs
+- Access to D365FO metadata DLLs in C:\AOSService\PackagesLocalDirectory\bin or K:\AOSService\PackagesLocalDirectory\bin
+  Microsoft.Dynamics.ApplicationPlatform.Environment
+  Microsoft.Dynamics.AX.Metadata
+  Microsoft.Dynamics.AX.Metadata.Core
+  Microsoft.Dynamics.AX.Metadata.Storage
 
 ## Building
 
