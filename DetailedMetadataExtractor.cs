@@ -231,12 +231,20 @@ namespace D365FOMetadataExtractor
             _combinedWriter.WriteLine();
 
             int count = 0;
+            int failedCount = 0;
             foreach (var name in names)
                 {
                     try
                     {
                         var table = MetadataProvider.Tables.Read(name);
-                        if (table == null) continue;
+                        if (table == null)
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            Console.WriteLine($"  WARNING: Table '{name}' returned null from Read()");
+                            Console.ResetColor();
+                            failedCount++;
+                            continue;
+                        }
 
                         _combinedWriter.WriteLine($"## {table.Name}");
 
@@ -357,12 +365,22 @@ namespace D365FOMetadataExtractor
                     }
                     catch (Exception ex)
                     {
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine($"  ERROR reading table '{name}': {ex.Message}");
+                        Console.ResetColor();
                         Debug.WriteLine($"Table [{name}]: {ex.Message}");
+                        failedCount++;
                     }
                 }
                 _combinedWriter.WriteLine("---");
                 _combinedWriter.WriteLine();
                 RecordCount("Tables", count);
+                if (failedCount > 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"   -> {failedCount:N0} tables failed to read (see warnings above)");
+                    Console.ResetColor();
+                }
         }
 
         // ═══════════════════════════════════════════════════════════════

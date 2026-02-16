@@ -36,9 +36,29 @@ The codebase uses the Strategy pattern to support multiple extraction implementa
 
 ### Core Workflow (Program.cs)
 1. Initialize D365FO metadata provider using `EnvironmentFactory` and `MetadataProviderFactory`
-2. Discover models by scanning for Descriptor XML files in the packages directory
+2. Discover packages by scanning for directories with a `Descriptor` subfolder
 3. **User selects metadata categories** via interactive menu (`GetUserSelection()`)
 4. Delegate to the selected `IMetadataExtractor` strategy via `Execute()` with selected categories
+
+### CRITICAL: Package Names vs Model Names
+**Important Discovery:** The metadata provider API uses **package names** (directory names), NOT descriptor file names:
+
+- ✅ **Correct**: Use `MetadataProvider.Tables.ListObjects("ApplicationSuite")` (package directory name)
+- ❌ **Wrong**: Use `MetadataProvider.Tables.ListObjects("Foundation")` (descriptor XML filename)
+
+The ApplicationSuite package contains multiple descriptor files (Foundation.xml, SCMControls.xml, etc.) in its `Descriptor` folder, but the metadata API expects the **package directory name** ("ApplicationSuite"), not the individual descriptor filenames.
+
+**Model Discovery Implementation:**
+```csharp
+List<string> modelNames = Directory.GetDirectories(packagesDir)
+    .Where(packageDir => Directory.Exists(Path.Combine(packageDir, "Descriptor")))
+    .Select(packageDir => Path.GetFileName(packageDir))  // Use package dir name, not XML filename!
+    .Distinct()
+    .OrderBy(n => n)
+    .ToList();
+```
+
+This ensures standard tables like `InventClosing` (which belong to the ApplicationSuite package) are correctly discovered.
 
 ### Model Iteration Pattern
 The proven pattern for iterating models is implemented in `MetadataExtractorBase.GetAllObjectNames()`:

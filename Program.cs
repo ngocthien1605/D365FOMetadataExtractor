@@ -71,14 +71,39 @@ namespace D365FOMetadataExtractor
                 Console.WriteLine("\n> Discovering models...");
                 Console.ResetColor();
 
-                List<string> modelNames = Directory.GetFiles(packagesDir, "*.xml", SearchOption.AllDirectories)
-                    .Where(path => path.IndexOf("Descriptor", StringComparison.OrdinalIgnoreCase) >= 0)
-                    .Select(path => Path.GetFileNameWithoutExtension(path))
+                // The metadata provider API uses PACKAGE NAMES (e.g., "ApplicationSuite"),
+                // not descriptor file names (e.g., "Foundation.xml").
+                // We need to get the package directory names, not the descriptor XML filenames.
+                List<string> modelNames = Directory.GetDirectories(packagesDir)
+                    .Where(packageDir => Directory.Exists(Path.Combine(packageDir, "Descriptor")))
+                    .Select(packageDir => Path.GetFileName(packageDir))
                     .Distinct()
                     .OrderBy(n => n)
                     .ToList();
 
-                Console.WriteLine($"  Found {modelNames.Count} models.");
+                Console.WriteLine($"  Found {modelNames.Count} models:");
+                foreach (var modelName in modelNames.Take(20))
+                {
+                    Console.WriteLine($"    - {modelName}");
+                }
+                if (modelNames.Count > 20)
+                {
+                    Console.WriteLine($"    ... and {modelNames.Count - 20} more");
+                }
+
+                // Validation check for ApplicationSuite package
+                if (modelNames.Contains("ApplicationSuite"))
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("\n  ✓ ApplicationSuite package found in list");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\n  ✗ ApplicationSuite package NOT found - standard tables will be missing!");
+                    Console.ResetColor();
+                }
 
                 // ══════════════════════════════════════════════════════
                 //  STEP 3: User selection of metadata categories

@@ -73,20 +73,46 @@ namespace D365FOMetadataExtractor
         protected List<string> GetAllObjectNames(Func<string, IEnumerable<string>> listFunc)
         {
             var all = new HashSet<string>();
+            int modelCount = 0;
+            int successCount = 0;
+            int emptyCount = 0;
+            int errorCount = 0;
+
             foreach (var model in ModelNames)
             {
+                modelCount++;
                 try
                 {
-                    foreach (var obj in listFunc(model))
+                    var objects = listFunc(model).ToList();
+                    int objectCount = objects.Count;
+
+                    if (objectCount > 0)
                     {
-                        all.Add(obj);
+                        Console.WriteLine($"  [{modelCount}/{ModelNames.Count}] {model,-40} : {objectCount,5} objects");
+                        foreach (var obj in objects)
+                        {
+                            all.Add(obj);
+                        }
+                        successCount++;
+                    }
+                    else
+                    {
+                        emptyCount++;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Some models may be empty or restricted — skip safely
+                    // Some models may be empty or restricted — log and skip
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine($"  [{modelCount}/{ModelNames.Count}] {model,-40} : ERROR - {ex.Message}");
+                    Console.ResetColor();
+                    errorCount++;
                 }
             }
+
+            Console.WriteLine($"\n  Summary: {successCount} models with objects, {emptyCount} empty, {errorCount} errors");
+            Console.WriteLine($"  Total unique objects found: {all.Count:N0}");
+
             return all.OrderBy(x => x).ToList();
         }
 
