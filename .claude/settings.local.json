@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(powershell -Command \"$content = Get-Content ''C:\\\\Users\\\\localadmin\\\\source\\\\repos\\\\D365FOMetadataExtractor\\\\DetailedMetadataExtractor.cs'' -Raw; $content.Length\")",
+      "Bash(powershell:*)",
+      "Bash(msbuild:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Windows\\\\Microsoft.NET\\\\Framework\\\\v4.0.30319\\\\MSBuild.exe\" \"C:\\\\Users\\\\localadmin\\\\source\\\\repos\\\\D365FOMetadataExtractor\\\\D365FOMetadataExtractor.csproj\" /p:Configuration=Debug /v:minimal)",
+      "Bash(\"C:\\\\Windows\\\\Microsoft.NET\\\\Framework\\\\v4.0.30319\\\\MSBuild.exe\" \"C:\\\\Users\\\\localadmin\\\\source\\\\repos\\\\D365FOMetadataExtractor\\\\D365FOMetadataExtractor.csproj\" \"/p:Configuration=Debug\" \"/v:minimal\")",
+      "Bash(/c/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe:*)",
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft Visual Studio/2019/Professional/MSBuild/Current/Bin/MSBuild.exe\" D365FOMetadataExtractor.csproj /p:Configuration=Debug /v:minimal)",
+      "Bash(\"/c/Program Files \\(x86\\)/MSBuild/14.0/Bin/MSBuild.exe\" D365FOMetadataExtractor.csproj /p:Configuration=Debug /v:minimal)",
+      "Bash(\"/c/Windows/Microsoft.NET/Framework64/v4.0.30319/MSBuild.exe\" D365FOMetadataExtractor.csproj /p:Configuration=Debug /v:minimal)"
+    ]
+  }
+}
